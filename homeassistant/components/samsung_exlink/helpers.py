@@ -11,15 +11,15 @@ from homeassistant.exceptions import HomeAssistantError
 from .const import DOMAIN
 
 
-def catch_command_errors[**_P](
-    func: Callable[_P, Coroutine[Any, Any, None]],
-) -> Callable[_P, Coroutine[Any, Any, None]]:
+def catch_command_errors[**_P, _R](
+    func: Callable[_P, Coroutine[Any, Any, _R]],
+) -> Callable[_P, Coroutine[Any, Any, _R]]:
     """Translate Samsung library errors raised by an action into HomeAssistantError."""
 
     @wraps(func)
-    async def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> None:
+    async def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _R:
         try:
-            await func(*args, **kwargs)
+            return await func(*args, **kwargs)
         except CommandRejected as err:
             raise HomeAssistantError(
                 translation_domain=DOMAIN,

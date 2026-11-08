@@ -1,0 +1,43 @@
+send_raw_command:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: samsung_exlink
+    cmd1:
+      required: true
+      example: 13
+      selector:
+        number:
+          min: 0
+          max: 255
+          step: 1
+          mode: box
+    cmd2:
+      required: true
+      example: 0
+      selector:
+        number:
+          min: 0
+          max: 255
+          step: 1
+          mode: box
+    cmd3:
+      required: true
+      example: 0
+      selector:
+        number:
+          min: 0
+          max: 255
+          step: 1
+          mode: box
+    value:
+      required: true
+      example: 26
+      selector:
+        number:
+          min: 0
+          max: 255
+          step: 1
+          mode: box

@@ -6,10 +6,18 @@ from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_DEVICE, CONF_MODEL, Platform
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.typing import ConfigType
 
 from .const import DOMAIN, LOGGER, SamsungExLinkConfigEntry
+from .services import async_setup_services
 
 PLATFORMS = [Platform.MEDIA_PLAYER, Platform.REMOTE]
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Set up Samsung ExLink services."""
+    async_setup_services(hass)
+    return True
 
 
 async def async_setup_entry(
