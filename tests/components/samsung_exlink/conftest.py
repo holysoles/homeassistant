@@ -31,6 +31,7 @@ class MockSamsungTV(SamsungTV):
         self.set_mute = AsyncMock()
         self.select_input_source = AsyncMock()
         self.set_art_mode = AsyncMock()
+        self.send_key = AsyncMock()
 
     def mock_state(self, state: TVState | None) -> None:
         """Push a state update through the TV."""

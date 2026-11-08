@@ -1,17 +1,9 @@
 """Media player platform for the Samsung ExLink integration."""
 
-from collections.abc import Callable, Coroutine
 from datetime import timedelta
-from functools import wraps
-from typing import Any, override
+from typing import override
 
-from samsung_exlink import (
-    MAX_VOLUME,
-    CommandRejected,
-    InputSource,
-    SamsungTVError,
-    TVState,
-)
+from samsung_exlink import MAX_VOLUME, InputSource, TVState
 
 from homeassistant.components.media_player import (
     MediaPlayerDeviceClass,
@@ -20,11 +12,11 @@ from homeassistant.components.media_player import (
     MediaPlayerState,
 )
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import DOMAIN, SamsungExLinkConfigEntry
+from .helpers import catch_command_errors
 
 # Samsung TVs do not push state over RS-232, so the entity is polled.
 SCAN_INTERVAL = timedelta(seconds=5)
@@ -62,31 +54,6 @@ SOURCE_ART_MODE = "art_mode"
 _BASE_SUPPORTED_FEATURES = (
     MediaPlayerEntityFeature.TURN_ON | MediaPlayerEntityFeature.TURN_OFF
 )
-
-
-def catch_command_errors[**_P](
-    func: Callable[_P, Coroutine[Any, Any, None]],
-) -> Callable[_P, Coroutine[Any, Any, None]]:
-    """Translate Samsung library errors raised by an action into HomeAssistantError."""
-
-    @wraps(func)
-    async def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> None:
-        try:
-            await func(*args, **kwargs)
-        except CommandRejected as err:
-            raise HomeAssistantError(
-                translation_domain=DOMAIN,
-                translation_key="command_rejected",
-                translation_placeholders={"error": str(err) or type(err).__name__},
-            ) from err
-        except (SamsungTVError, ConnectionError, OSError, TimeoutError) as err:
-            raise HomeAssistantError(
-                translation_domain=DOMAIN,
-                translation_key="command_failed",
-                translation_placeholders={"error": str(err) or type(err).__name__},
-            ) from err
-
-    return wrapper
 
 
 async def async_setup_entry(
